@@ -1,10 +1,13 @@
 CFLAGS = -g -Wall -Wextra -pedantic -std=gnu11
 
-csim: main.o
-	g++ -o $@ main.o
+csim: main.o functions.o
+	g++ -o $@ main.o functions.o
 
-main.o: main.cpp
+main.o: main.cpp functions.h
 	g++ $(CFLAGS) -c main.cpp
+
+finctions.o: functions.cpp functions.h
+	g++ $(CFLAGS) -c functions.cpp
 
 clean:
 	rm -f *.o csim *~
