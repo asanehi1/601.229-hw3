@@ -1,4 +1,4 @@
-CFLAGS = -g -Wall -Wextra -pedantic -std=gnu11
+CFLAGS = -g -Wall -Wextra -pedantic
 
 csim: main.o functions.o
 	g++ -o $@ main.o functions.o
