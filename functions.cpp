@@ -1,15 +1,11 @@
 #include <iostream>
 #include "functions.h"
 
+// check for power of two
+// return 0 if true
+// return 1 if false
 int powerOfTwo(int num) {
-    if(num == 1) {
-        return 1;
-    }
-
-    //idk if I am checking this right
-    //trying to find power of two
-    //feel free to fix
-    if(num > 1 && (num & 1)) {
+    if(num != 0 && (num & (num - 1)) == 0 ) {
         return 0;
     }
 
