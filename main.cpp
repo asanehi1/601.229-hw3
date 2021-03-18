@@ -1,9 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include "functions.h"
-#include <stdlib.h>
-#include <string.h>
-
+#include <stdio.h>
 
 int main (int argc, char *argv[]) {
     if(argc != 7) {
@@ -17,6 +15,8 @@ int main (int argc, char *argv[]) {
     std::string writeAllocOrNoAlloc = argv[4];
     std::string writeThroughOrBack = argv[5];
     std::string lruOrFifo = argv[6];
+
+
 
     //validate the number of sets in the cache
     if(numSets <= 0 || powerOfTwo(numSets) == 0) {
@@ -66,21 +66,37 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    //start reading file
+    
     //add counters somewhere to keep track of values
     // values to keep track of:
     // load, store, load hits, load misses, store hits, store misses, total cycles
     for (int i = 0; i <= numSets; i++) {
-      // if first char is l
-         // load hex value (2nd value in set)
-         // if load returns 0, it was a hit
-         // if load returns 1, it was a miss
-      // if first char is s
+      std::string firstValue;
+      std::cin >> firstValue;
+      
+      // hex value
+      std::string secondValue;
+      std::cin >> secondValue;
+
+      // don't use 3rd value for anything 
+      std::string thirdValue;
+      std::cin >> thirdValue;
+
+      // this is just a print statement
+      std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
+     
+      if (firstValue == "l") {
+	// load hex value (2nd value in set)                                   
+         // if load returns 0, it was a hit                                    
+         // if load returns 1, it was a miss 
+      } else if (firstValue == "s") {
          // store hex value (2nd value in set)
          // if store returns 0, it was a hit
 	 // if store returns 1, it was a miss  
               // either call write allocate or no write allocate 
-      
+      } else {
+	std::cout << "Error: file has neither l or s" << std::endl;
+      }
     }
     return 0;
 }
