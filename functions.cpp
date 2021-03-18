@@ -17,6 +17,7 @@ int powerOfTwo(int num) {
 // return 1 if miss (tag can't be read / found)                                                                                          
 // read data 
 int load(/*param*/) {
+  return 1;
 }
 
 
@@ -26,7 +27,7 @@ int load(/*param*/) {
 // return 1 if miss (tag mismatch)
 // write data
 int store(/*param*/) {
-  return;
+  return 1;
 }
 
 // if store miss, either write allocate or no write allocate

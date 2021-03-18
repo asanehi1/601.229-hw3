@@ -66,5 +66,21 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
+    //start reading file
+    //add counters somewhere to keep track of values
+    // values to keep track of:
+    // load, store, load hits, load misses, store hits, store misses, total cycles
+    for (int i = 0; i <= numSets; i++) {
+      // if first char is l
+         // load hex value (2nd value in set)
+         // if load returns 0, it was a hit
+         // if load returns 1, it was a miss
+      // if first char is s
+         // store hex value (2nd value in set)
+         // if store returns 0, it was a hit
+	 // if store returns 1, it was a miss  
+              // either call write allocate or no write allocate 
+      
+    }
     return 0;
 }
