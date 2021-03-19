@@ -4,10 +4,10 @@
 #include <vector>
 
 struct Cache {
-    int tag;
-    int dirty = 0;
-    int accessCount = 0;
-    int index;
+    long tag;
+    int dirty;
+    int accessCount;
+    long index;
 };
 
 int powerOfTwo(int num);
@@ -21,3 +21,4 @@ void writeBack(/*param*/);
 void lru(/*param*/);
 void fifo(/*param*/);
 unsigned long hexToBinary(std::string s);
+int checkAddressInCache(Cache &c, std::vector<Cache>&cache, int blocks);

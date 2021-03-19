@@ -26,13 +26,43 @@ int powerOfTwo(int num) {
 unsigned long hexToBinary(std::string s) {
   const char * c = s.c_str();
   unsigned long ul = strtoul(c, NULL, 16);
-  std::cout <<"address = "<< ul << "\n\n";
   unsigned long i = ul;
 
   return ul;
 }
 
-void getTagIndex(int sets, int blocks, int bytes) {
+void getTagIndex(int sets, int blocks, int bytes, unsigned long address
+                ,long &index, long &tag) {
+  int indexBits = log2(sets);
+  int offset = log2(blocks);
+  int tagBits = 32 - indexBits - offset;
+
+  //Get index and tag from address
+  //Get index and tag from address                                                                       
+  int addressLength = log2(address) + 1;
+  if (addressLength < 32 && addressLength > offset + indexBits) {
+    tag = address >> (offset + indexBits);
+    index = tag << (offset + indexBits);
+    index = address ^ index;
+    index = index >> (offset);
+  } else if (addressLength < 32 && addressLength > offset) {
+    tag = 0;
+    index = index >> (offset);
+  } else if (addressLength == 32) {
+    //if addressLength = 32                                                                              
+    tag = address >> (32 - tagBits);
+    index = tag << (32 - tagBits);
+    index = address ^ index;
+    index = index >> (offset);
+  } else {
+    //addressLength <= offset                                                                            
+    tag = 0;
+    index = 0;
+  }
+
+
+  std::cout << "tagBits:" << tagBits << " indexBits:" << indexBits << std::endl;
+  std::cout << "tag:" << tag << " index:" << index << std::endl;
 
 }
 
@@ -40,19 +70,25 @@ void getTagIndex(int sets, int blocks, int bytes) {
 // return 0 if hit (tag exists)                                                                                                           
 // return 1 if miss (tag can't be read / found)                                                                                          
 // read data 
-int load(std::vector<Cache> &cache, int sets, int blocks, int bytes
-        , std::string writeAlloc, std::string writeTB, unsigned long address) {
-    
-  //need help with these calculations
-  int indexBits = log2(sets);
-  int offset = log2(blocks);
-  int tagBits = 32 - indexBits - offset;
+int load(vector<Cache> &cache, int sets, int blocks, int bytes
+        ,string writeAlloc, string writeTB, unsigned long address) {
 
-  int tag, index;
-  //Get index and tag from address
+  long tag, index;
+  getTagIndex(sets, blocks, bytes, address, index, tag);
+
+  Cache c;
+  c.accessCount = 1;
+  c.dirty = 0;
+  c.index = index;
+  c.tag = tag;
 
   if(writeAlloc == "write-allocate" && writeTB == "write-though") {
-    
+    if(checkAddressInCache(c, cache, blocks) == 0) {
+      return 0;
+    } 
+
+    checkAddressInCache(c, cache, blocks);
+
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
 
   } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
@@ -64,12 +100,49 @@ int load(std::vector<Cache> &cache, int sets, int blocks, int bytes
   return 1;
 }
 
+int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
+  int startIndex = c.index *(blocks) - blocks;
+
+  for (size_t i = startIndex; i <= startIndex + blocks; i++) {
+    if(cache.at(i).index == -1) {
+      cache.at(i) = c;
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+//return 0 if theres a hit
+//return 1 if theres a miss
+int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
+  int startIndex = c.index *(blocks) - blocks;
+
+  for (size_t i = startIndex; i <= startIndex + blocks; i++) {
+    if(cache.at(i).tag == c.tag) {
+      std::cout <<"we have a hit!\n";
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
   
 // return 0 if hit (store same tag)
 // return 1 if miss (tag mismatch)
 // write data
 int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
         , std::string writeAlloc, std::string writeTB, unsigned long address) {
+
+  long tag, index;
+  getTagIndex(sets, blocks, bytes, address, index, tag);
+
+  Cache c;
+  c.accessCount = 1;
+  c.dirty = 0;
+  c.index = index;
+  c.tag = tag;
 
   if(writeAlloc == "write-allocate" && writeTB == "write-though") {
     
@@ -120,8 +193,6 @@ void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   }
 
   cache.at(index) = c;
-  // evict block
-  // TODO
 }
 
 //(first-in-first-out) we evict the block that has been in the cache the longest
