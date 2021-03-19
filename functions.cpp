@@ -61,14 +61,14 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
   }
 
 
-  std::cout << "tagBits:" << tagBits << " indexBits:" << indexBits << std::endl;
-  std::cout << "tag:" << tag << " index:" << index << std::endl;
+  //std::cout << "tagBits:" << tagBits << " indexBits:" << indexBits << std::endl;
+  //std::cout << "tag:" << tag << " index:" << index << std::endl;
 
 }
 
 int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
   int startIndex = c.index *(blocks);
-  std::cout << "index: " << c.index << "\n";
+  //std::cout << "index: " << c.index << "\n";
   for (int i = startIndex; i <= startIndex + blocks; i++) {
     if(cache.at(i).index == -1) {
       cache.at(i) = c;
@@ -89,7 +89,7 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
 
   for (size_t i = startIndex; i <= startIndex + blocks; i++) {
     if(cache.at(i).tag == c.tag) {
-      std::cout <<"we have a hit!\n";
+      //std::cout <<"we have a hit!\n";
       cache.at(i).accessCount++;
       return 0;
     }

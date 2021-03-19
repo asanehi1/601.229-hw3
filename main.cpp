@@ -93,7 +93,7 @@ int main (int argc, char *argv[]) {
       std::cin >> thirdValue;
 
       // this is just a print statement
-      std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
+      //std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
       address = hexToBinary(secondValue);
 
       
