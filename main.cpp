@@ -18,9 +18,9 @@ int main (int argc, char *argv[]) {
     int numSets = atoi(argv[1]);
     int numBlocks = atoi(argv[2]);
     int numBytes = atoi(argv[3]);
-    std::string writeAllocOrNoAlloc = argv[4];
-    std::string writeThroughOrBack = argv[5];
-    std::string lruOrFifo = argv[6];
+    string writeAllocOrNoAlloc = argv[4];
+    string writeThroughOrBack = argv[5];
+    string lruOrFifo = argv[6];
 
     //validate the number of sets in the cache
     if(numSets <= 0 || powerOfTwo(numSets) == 0) {
@@ -69,22 +69,25 @@ int main (int argc, char *argv[]) {
     // load, store, load hits, load misses, store hits, store misses, total cycles
     //vector<unsigned long> addresses;
     unsigned long address;
-    vector<vector<map<string, int>>> cache(numSets);
+    vector<vector<map<int, int>>> cache(numSets);
 
     int sHits = 0, sMisses = 0;
     int lHits = 0, lMisses = 0;
     int tLoads = 0, tStore = 0, tCycles = 0;
 
     while (true) {
-      std::string firstValue;
+      string firstValue;
       std::cin >> firstValue;
+      if(firstValue.empty()) {
+          break;
+      }
       
       // hex value
       char secondValue[10];
       std::cin >> secondValue;
 
       // don't use 3rd value for anything 
-      std::string thirdValue;
+      string thirdValue;
       std::cin >> thirdValue;
 
       // this is just a print statement
@@ -97,8 +100,10 @@ int main (int argc, char *argv[]) {
         // if load returns 1, it was a miss 
         if(load(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
             lMisses++;
+            tCycles +=100;
         } else {
             lHits++;
+            tCycles++;
         }
         tLoads++;
       } else if (firstValue == "s") {
@@ -108,10 +113,11 @@ int main (int argc, char *argv[]) {
         // either call write allocate or no write allocate 
         if(store(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
             lMisses++;
+            tCycles += 100;
         } else {
             lHits++;
+            tCycles++;
         }
-
         tStore++;
       } else {
 	    std::cout << "ERROR: file has neither l or s" << std::endl;

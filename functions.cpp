@@ -8,6 +8,8 @@
 #include <map>
 #include <math.h>
 
+
+
 using std::vector;
 using std::map;
 using std::string;
@@ -25,19 +27,23 @@ int powerOfTwo(int num) {
 
 unsigned long hexToBinary(char s[]) {
   unsigned long ul = strtoul(s, NULL, 16);
-  std::cout <<"address = "<< ul << "\n";
+  std::cout <<"address = "<< ul << "\n\n";
   unsigned long i = ul;
 
-  std::cout << "\ntag 2 bits: " << (i & (111 << 25)) << "\n";
+  //std::cout << "tag 2 bits: " << (i & (111 << 25)) << "\n";
   return ul;
+}
+
+void getTagIndex(int sets, int blocks, int bytes) {
+
 }
 
 
 // return 0 if hit (tag exists)                                                                                                           
 // return 1 if miss (tag can't be read / found)                                                                                          
 // read data 
-int load(std::vector<std::vector<std::map<std::string, int>>> &cache, int sets, int blocks
-          , int bytes, std::string writeAlloc, std::string writeTB, unsigned long address) {
+int load(vector<vector<map<int, int>>> &cache, int sets, int blocks
+        , int bytes, string writeAlloc, string writeTB, unsigned long address) {
     
   //need help with these calculations
   int indexBits = log2(sets);
@@ -47,21 +53,33 @@ int load(std::vector<std::vector<std::map<std::string, int>>> &cache, int sets, 
   int tag, index;
   //Get index and tag from address
 
+  if(writeAlloc == "write-allocate" && writeTB == "write-though") {
+    
+  } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
+
+  } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
+
+  }
 
 
 
   return 1;
 }
 
-
-
   
 // return 0 if hit (store same tag)
 // return 1 if miss (tag mismatch)
 // write data
-int store(std::vector<std::vector<std::map<std::string, int>>> &cache, int sets, int blocks
-          , int bytes, std::string writeAlloc, std::string writeTB, unsigned long address) {
+int store(vector<vector<map<int, int>>> &cache, int sets, int blocks
+          , int bytes, string writeAlloc, string writeTB, unsigned long address) {
 
+  if(writeAlloc == "write-allocate" && writeTB == "write-though") {
+    
+  } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
+
+  } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
+
+  }
 
   return 1;
 }
@@ -70,7 +88,7 @@ int store(std::vector<std::vector<std::map<std::string, int>>> &cache, int sets,
 // no write allocate doesn't do anything, don't modify cache 
 
 //bring the relevant memory block into the cache before the store proceeds
-void writeAllocate(/*param*/) {
+void writeAllocate(vector<vector<map<int, int>>> &cache) {
   // TODO
   // maybe return if necessary 
 }
