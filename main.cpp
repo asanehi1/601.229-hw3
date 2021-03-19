@@ -78,7 +78,7 @@ int main (int argc, char *argv[]) {
       std::cin >> firstValue;
       
       // hex value
-      char secondValue[10];
+      std::string secondValue;
       std::cin >> secondValue;
 
       // don't use 3rd value for anything 
@@ -89,7 +89,7 @@ int main (int argc, char *argv[]) {
       std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
       address = hexToBinary(secondValue);
 
-     
+      
       if (firstValue == "l") {
 	    // load hex value (2nd value in set)                                   
         // if load returns 0, it was a hit                                    
@@ -119,6 +119,7 @@ int main (int argc, char *argv[]) {
 	    std::cout << "ERROR: file has neither l or s" << std::endl;
         return 1;
       }
+      
     }
 
     std::cout << "Total loads: " << tLoads << "\n";
