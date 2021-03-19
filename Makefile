@@ -11,8 +11,8 @@ all: $(EXES)
 csim: main.o functions.o
 	g++ -o $@ main.o functions.o
 
-tests: tests.o
-	g++ -o $@ tests.o
+#tests: tests.o
+#	g++ -o $@ tests.o
 
 main.o: main.cpp functions.h
 	g++ $(CFLAGS) -c main.cpp

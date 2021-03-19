@@ -5,13 +5,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
-#include <map>
 #include <math.h>
 
 
 
 using std::vector;
-using std::map;
 using std::string;
 
 // check for power of two
@@ -30,7 +28,6 @@ unsigned long hexToBinary(char s[]) {
   std::cout <<"address = "<< ul << "\n\n";
   unsigned long i = ul;
 
-  //std::cout << "tag 2 bits: " << (i & (111 << 25)) << "\n";
   return ul;
 }
 
@@ -88,7 +85,7 @@ int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
 // no write allocate doesn't do anything, don't modify cache 
 
 //bring the relevant memory block into the cache before the store proceeds
-void writeAllocate(vector<vector<map<int, int>>> &cache) {
+void writeAllocate(vector<Cache> &cache) {
   // TODO
   // maybe return if necessary 
 }
@@ -113,7 +110,7 @@ void writeBack(/*param*/) {
 void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   int index = startIndex;
   int count = cache.at(startIndex).accessCount;
-  
+
   for(int i = startIndex + 1; i <= endIndex; i++) {
     if(count > cache.at(i).accessCount) {
       index = i;
