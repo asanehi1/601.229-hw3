@@ -23,8 +23,9 @@ int powerOfTwo(int num) {
   return 0;
 }
 
-unsigned long hexToBinary(char s[]) {
-  unsigned long ul = strtoul(s, NULL, 16);
+unsigned long hexToBinary(std::string s) {
+  const char * c = s.c_str();
+  unsigned long ul = strtoul(c, NULL, 16);
   std::cout <<"address = "<< ul << "\n\n";
   unsigned long i = ul;
 

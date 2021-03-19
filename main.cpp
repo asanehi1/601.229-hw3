@@ -87,9 +87,9 @@ int main (int argc, char *argv[]) {
 
       // this is just a print statement
       std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
-      //address = hexToBinary(secondValue);
+      address = hexToBinary(secondValue);
 
-        address = hexToBinary(secondValue);
+     
       if (firstValue == "l") {
 	    // load hex value (2nd value in set)                                   
         // if load returns 0, it was a hit                                    

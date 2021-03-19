@@ -20,4 +20,4 @@ void writeThrough(/*param*/);
 void writeBack(/*param*/);
 void lru(/*param*/);
 void fifo(/*param*/);
-unsigned long hexToBinary(char s[]);
+unsigned long hexToBinary(std::string s);
