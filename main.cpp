@@ -115,10 +115,10 @@ int main (int argc, char *argv[]) {
 	    // if store returns 1, it was a miss  
         // either call write allocate or no write allocate 
         if(store(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
-            lMisses++;
+            sMisses++;
             tCycles += 100;
         } else {
-            lHits++;
+            sHits++;
             tCycles++;
         }
         tStore++;

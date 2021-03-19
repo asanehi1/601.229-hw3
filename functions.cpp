@@ -66,6 +66,38 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
 
 }
 
+int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
+  int startIndex = c.index *(blocks);
+  std::cout << "index: " << c.index << "\n";
+  for (int i = startIndex; i <= startIndex + blocks; i++) {
+    if(cache.at(i).index == -1) {
+      cache.at(i) = c;
+      cache.at(i).accessCount++;
+      return 0;
+    }
+  }
+
+  lru(cache, startIndex, startIndex + blocks, c);
+
+  return 1;
+}
+
+//return 0 if theres a hit
+//return 1 if theres a miss
+int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
+  int startIndex = c.index *(blocks);
+
+  for (size_t i = startIndex; i <= startIndex + blocks; i++) {
+    if(cache.at(i).tag == c.tag) {
+      std::cout <<"we have a hit!\n";
+      cache.at(i).accessCount++;
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
 
 // return 0 if hit (tag exists)                                                                                                           
 // return 1 if miss (tag can't be read / found)                                                                                          
@@ -82,47 +114,23 @@ int load(vector<Cache> &cache, int sets, int blocks, int bytes
   c.index = index;
   c.tag = tag;
 
-  if(writeAlloc == "write-allocate" && writeTB == "write-though") {
+  if(writeAlloc == "write-allocate" && writeTB == "write-through") {
     if(checkAddressInCache(c, cache, blocks) == 0) {
       return 0;
     } 
 
-    checkAddressInCache(c, cache, blocks);
+    addAddressToCache(c, cache, blocks);
 
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
+    if(checkAddressInCache(c, cache, blocks) == 0) {
+      cache.at(c.index *(blocks)).dirty = 1;
+      return 0;
+    } 
 
+    addAddressToCache(c, cache, blocks);
+    cache.at(c.index *(blocks)).dirty = 1;
   } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
-
-  }
-
-
-
-  return 1;
-}
-
-int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
-  int startIndex = c.index *(blocks) - blocks;
-
-  for (size_t i = startIndex; i <= startIndex + blocks; i++) {
-    if(cache.at(i).index == -1) {
-      cache.at(i) = c;
-      return 0;
-    }
-  }
-
-  return 1;
-}
-
-//return 0 if theres a hit
-//return 1 if theres a miss
-int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
-  int startIndex = c.index *(blocks) - blocks;
-
-  for (size_t i = startIndex; i <= startIndex + blocks; i++) {
-    if(cache.at(i).tag == c.tag) {
-      std::cout <<"we have a hit!\n";
-      return 0;
-    }
+    std::cout <<"nothing to do, writing to memory\n";
   }
 
   return 1;
@@ -145,6 +153,11 @@ int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
   c.tag = tag;
 
   if(writeAlloc == "write-allocate" && writeTB == "write-though") {
+    if(checkAddressInCache(c, cache, blocks) == 0) {
+      return 0;
+    } 
+
+    addAddressToCache(c, cache, blocks);
     
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
 
@@ -181,7 +194,7 @@ void writeBack(/*param*/) {
 //evicts
 
 //(least-recently-used) we evict the block that has not been accessed the longest
-void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
+void lru(vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   int index = startIndex;
   int count = cache.at(startIndex).accessCount;
 
@@ -193,6 +206,7 @@ void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   }
 
   cache.at(index) = c;
+  cache.at(index).accessCount++;
 }
 
 //(first-in-first-out) we evict the block that has been in the cache the longest

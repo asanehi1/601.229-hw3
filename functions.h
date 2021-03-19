@@ -18,7 +18,8 @@ int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
 void writeAllocate(std::vector<Cache> &cache);
 void writeThrough(/*param*/);
 void writeBack(/*param*/);
-void lru(/*param*/);
+void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c);
 void fifo(/*param*/);
 unsigned long hexToBinary(std::string s);
 int checkAddressInCache(Cache &c, std::vector<Cache>&cache, int blocks);
+int addAddressToCache(Cache &c, std::vector<Cache>&cache, int blocks);
