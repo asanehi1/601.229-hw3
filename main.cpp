@@ -69,7 +69,7 @@ int main (int argc, char *argv[]) {
     // load, store, load hits, load misses, store hits, store misses, total cycles
     //vector<unsigned long> addresses;
     unsigned long address;
-    vector<vector<map<int, int>>> cache(numSets);
+    vector<Cache> cache(numSets * numBlocks);
 
     int sHits = 0, sMisses = 0;
     int lHits = 0, lMisses = 0;

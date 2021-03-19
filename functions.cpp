@@ -42,8 +42,8 @@ void getTagIndex(int sets, int blocks, int bytes) {
 // return 0 if hit (tag exists)                                                                                                           
 // return 1 if miss (tag can't be read / found)                                                                                          
 // read data 
-int load(vector<vector<map<int, int>>> &cache, int sets, int blocks
-        , int bytes, string writeAlloc, string writeTB, unsigned long address) {
+int load(std::vector<Cache> &cache, int sets, int blocks, int bytes
+        , std::string writeAlloc, std::string writeTB, unsigned long address) {
     
   //need help with these calculations
   int indexBits = log2(sets);
@@ -70,8 +70,8 @@ int load(vector<vector<map<int, int>>> &cache, int sets, int blocks
 // return 0 if hit (store same tag)
 // return 1 if miss (tag mismatch)
 // write data
-int store(vector<vector<map<int, int>>> &cache, int sets, int blocks
-          , int bytes, string writeAlloc, string writeTB, unsigned long address) {
+int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
+        , std::string writeAlloc, std::string writeTB, unsigned long address) {
 
   if(writeAlloc == "write-allocate" && writeTB == "write-though") {
     
@@ -110,7 +110,18 @@ void writeBack(/*param*/) {
 //evicts
 
 //(least-recently-used) we evict the block that has not been accessed the longest
-void lru(/*param*/) {
+void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
+  int index = startIndex;
+  int count = cache.at(startIndex).accessCount;
+  
+  for(int i = startIndex + 1; i <= endIndex; i++) {
+    if(count > cache.at(i).accessCount) {
+      index = i;
+      count = cache.at(i).accessCount;
+    }
+  }
+
+  cache.at(index) = c;
   // evict block
   // TODO
 }
