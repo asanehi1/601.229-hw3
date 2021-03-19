@@ -75,12 +75,9 @@ int main (int argc, char *argv[]) {
     int lHits = 0, lMisses = 0;
     int tLoads = 0, tStore = 0, tCycles = 0;
 
-    while (true) {
+    while (std::cin.peek() != EOF) {
       string firstValue;
       std::cin >> firstValue;
-      if(firstValue.empty()) {
-          break;
-      }
       
       // hex value
       char secondValue[10];
@@ -92,7 +89,7 @@ int main (int argc, char *argv[]) {
 
       // this is just a print statement
       std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
-      address = hexToBinary(secondValue);
+      //address = hexToBinary(secondValue);
      
       if (firstValue == "l") {
 	    // load hex value (2nd value in set)                                   
