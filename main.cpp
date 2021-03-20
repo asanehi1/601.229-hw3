@@ -72,9 +72,8 @@ int main (int argc, char *argv[]) {
     c.dirty = 0;
     c.accessCount = 0;
     c.index = -1;
-
-
-    vector<Cache> cache(numSets * numBlocks, c);
+ 
+    vector<Cache> cache(numSets * numBlocks * numBytes, c);
 
     int sHits = 0, sMisses = 0;
     int lHits = 0, lMisses = 0;
@@ -129,6 +128,7 @@ int main (int argc, char *argv[]) {
       
     }
 
+    std::cout << "cache length: " << cache.size() <<'\n';
     std::cout << "Total loads: " << tLoads << "\n";
     std::cout << "Total stores: " << tStore << "\n";
     std::cout << "Load hits: " << lHits << "\n";

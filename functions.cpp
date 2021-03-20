@@ -69,7 +69,7 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
 int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
   int startIndex = c.index *(blocks);
   //std::cout << "index: " << c.index << "\n";
-  for (int i = startIndex; i <= startIndex + blocks; i++) {
+  for (int i = startIndex; i < startIndex + blocks; i++) {
     if(cache.at(i).index == -1) {
       cache.at(i) = c;
       cache.at(i).accessCount++;
@@ -87,7 +87,7 @@ int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
 int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
   int startIndex = c.index *(blocks);
 
-  for (size_t i = startIndex; i <= startIndex + blocks; i++) {
+  for (size_t i = startIndex; i < startIndex + blocks; i++) {
     if(cache.at(i).tag == c.tag) {
       //std::cout <<"we have a hit!\n";
       cache.at(i).accessCount++;
@@ -118,7 +118,6 @@ int load(vector<Cache> &cache, int sets, int blocks, int bytes
     if(checkAddressInCache(c, cache, blocks) == 0) {
       return 0;
     } 
-
     addAddressToCache(c, cache, blocks);
 
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
@@ -126,9 +125,9 @@ int load(vector<Cache> &cache, int sets, int blocks, int bytes
       cache.at(c.index *(blocks)).dirty = 1;
       return 0;
     } 
-
     addAddressToCache(c, cache, blocks);
     cache.at(c.index *(blocks)).dirty = 1;
+
   } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
     std::cout <<"nothing to do, writing to memory\n";
   }
@@ -152,7 +151,7 @@ int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
   c.index = index;
   c.tag = tag;
 
-  if(writeAlloc == "write-allocate" && writeTB == "write-though") {
+  if(writeAlloc == "write-allocate" && writeTB == "write-through") {
     if(checkAddressInCache(c, cache, blocks) == 0) {
       return 0;
     } 
@@ -160,6 +159,12 @@ int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
     addAddressToCache(c, cache, blocks);
     
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
+    if(checkAddressInCache(c, cache, blocks) == 0) {
+      cache.at(c.index *(blocks)).dirty = 1;
+      return 0;
+    } 
+    addAddressToCache(c, cache, blocks);
+    cache.at(c.index *(blocks)).dirty = 1;
 
   } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
 
