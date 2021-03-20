@@ -11,13 +11,8 @@ struct Cache {
 };
 
 int powerOfTwo(int num);
-int load(std::vector<Cache> &cache, int sets, int blocks, int bytes
+int loadAndStore(std::vector<Cache> &cache, int sets, int blocks, int bytes
         , std::string writeAlloc, std::string writeTB, unsigned long address);
-int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
-        , std::string writeAlloc, std::string writeTB, unsigned long address);
-void writeAllocate(std::vector<Cache> &cache);
-void writeThrough(/*param*/);
-void writeBack(/*param*/);
 void lru(std::vector<Cache> &cache, int startIndex, int endIndex, Cache c);
 void fifo(/*param*/);
 unsigned long hexToBinary(std::string s);

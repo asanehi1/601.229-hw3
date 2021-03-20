@@ -1,3 +1,4 @@
+
 #include <cstdio>
 #include <iostream>
 #include "functions.h"
@@ -92,7 +93,7 @@ int main (int argc, char *argv[]) {
       std::cin >> thirdValue;
 
       // this is just a print statement
-      std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
+      //std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
       address = hexToBinary(secondValue);
 
       
@@ -100,7 +101,7 @@ int main (int argc, char *argv[]) {
 	    // load hex value (2nd value in set)                                   
         // if load returns 0, it was a hit                                    
         // if load returns 1, it was a miss 
-        if(load(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
+        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
             lMisses++;
             tCycles +=100;
         } else {
@@ -113,7 +114,7 @@ int main (int argc, char *argv[]) {
         // if store returns 0, it was a hit
 	    // if store returns 1, it was a miss  
         // either call write allocate or no write allocate 
-        if(store(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
+        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address) == 1) {
             sMisses++;
             tCycles += 100;
         } else {
@@ -121,14 +122,11 @@ int main (int argc, char *argv[]) {
             tCycles++;
         }
         tStore++;
-      } else {
-	//std::cout << "ERROR: file has neither l or s" << std::endl;
-        //return 1;
-      }
-      
+      } 
+	
     }
 
-    std::cout << "cache length: " << cache.size() <<'\n';
+    //std::cout << "cache length: " << cache.size() <<'\n';
     std::cout << "Total loads: " << tLoads << "\n";
     std::cout << "Total stores: " << tStore << "\n";
     std::cout << "Load hits: " << lHits << "\n";

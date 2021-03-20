@@ -1,3 +1,4 @@
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -37,8 +38,7 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
   int offset = log2(blocks);
   int tagBits = 32 - indexBits - offset;
 
-  //Get index and tag from address
-  //Get index and tag from address                                                                       
+  //Get index and tag from address                                                                    
   int addressLength = log2(address) + 1;
   if (addressLength < 32 && addressLength > offset + indexBits) {
     tag = address >> (offset + indexBits);
@@ -68,7 +68,6 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
 
 int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks) {
   int startIndex = c.index *(blocks);
-  //std::cout << "index: " << c.index << "\n";
   for (int i = startIndex; i < startIndex + blocks; i++) {
     if(cache.at(i).index == -1) {
       cache.at(i) = c;
@@ -89,7 +88,6 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
 
   for (size_t i = startIndex; i < startIndex + blocks; i++) {
     if(cache.at(i).tag == c.tag) {
-      //std::cout <<"we have a hit!\n";
       cache.at(i).accessCount++;
       return 0;
     }
@@ -102,7 +100,7 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
 // return 0 if hit (tag exists)                                                                                                           
 // return 1 if miss (tag can't be read / found)                                                                                          
 // read data 
-int load(vector<Cache> &cache, int sets, int blocks, int bytes
+int loadAndStore(vector<Cache> &cache, int sets, int blocks, int bytes
         ,string writeAlloc, string writeTB, unsigned long address) {
 
   long tag, index;
@@ -135,69 +133,7 @@ int load(vector<Cache> &cache, int sets, int blocks, int bytes
   return 1;
 }
 
-  
-// return 0 if hit (store same tag)
-// return 1 if miss (tag mismatch)
-// write data
-int store(std::vector<Cache> &cache, int sets, int blocks, int bytes
-        , std::string writeAlloc, std::string writeTB, unsigned long address) {
-
-  long tag, index;
-  getTagIndex(sets, blocks, bytes, address, index, tag);
-
-  Cache c;
-  c.accessCount = 1;
-  c.dirty = 0;
-  c.index = index;
-  c.tag = tag;
-
-  if(writeAlloc == "write-allocate" && writeTB == "write-through") {
-    if(checkAddressInCache(c, cache, blocks) == 0) {
-      return 0;
-    } 
-
-    addAddressToCache(c, cache, blocks);
-    
-  } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
-    if(checkAddressInCache(c, cache, blocks) == 0) {
-      cache.at(c.index *(blocks)).dirty = 1;
-      return 0;
-    } 
-    addAddressToCache(c, cache, blocks);
-    cache.at(c.index *(blocks)).dirty = 1;
-
-  } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
-
-  }
-
-  return 1;
-}
-
-// if store miss, either write allocate or no write allocate
-// no write allocate doesn't do anything, don't modify cache 
-
-//bring the relevant memory block into the cache before the store proceeds
-void writeAllocate(vector<Cache> &cache) {
-  // TODO
-  // maybe return if necessary 
-}
-
-// write through or write back is affected by writeAllocate and noWriteAllocate
-
-// a store writes to the cache as well as to memory
-void writeThrough(/*param*/) {
-  // TODO
-}
-
-// a store writes to the cache only and marks the block dirty
-//if the block is evicted later, it has to be written back to memory before being replaced
-void writeBack(/*param*/) {
-  // TODO
-}
-
-
 //evicts
-
 //(least-recently-used) we evict the block that has not been accessed the longest
 void lru(vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   int index = startIndex;
@@ -219,4 +155,3 @@ void fifo(/*param*/) {
   // evict block
   // TODO
 }
-
