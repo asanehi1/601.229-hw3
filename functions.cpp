@@ -107,14 +107,10 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
 int loadAndStore(vector<Cache> &cache, int sets, int blocks, int bytes
 		 ,string writeAlloc, string writeTB, unsigned long address/*, string fifoOrLru*/) {
 
-  long tag, index;
+  long tag, index = 0;
   getTagIndex(sets, blocks, bytes, address, index, tag);
 
-  Cache c;
-  c.accessCount = 1;
-  c.dirty = 0;
-  c.index = index;
-  c.tag = tag;
+  Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index};
   
   
   if(writeAlloc == "write-allocate" && writeTB == "write-through") {
