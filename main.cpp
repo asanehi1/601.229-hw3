@@ -73,7 +73,7 @@ int main (int argc, char *argv[]) {
     c.dirty = 0;
     c.accessCount = 0;
     c.index = -1;
-    // c.timestamp = 0;
+    c.timestamp = 0;
  
     vector<Cache> cache(numSets * numBlocks * numBytes, c);
 
@@ -102,7 +102,7 @@ int main (int argc, char *argv[]) {
 	    // load hex value (2nd value in set)                                   
         // if load returns 0, it was a hit                                    
         // if load returns 1, it was a miss 
-        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address/*, lruOrFifo*/) == 1) {
+        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo) == 1) {
             lMisses++;
             tCycles += 25 * numBytes + 1;
         } else {
@@ -115,7 +115,7 @@ int main (int argc, char *argv[]) {
         // if store returns 0, it was a hit
 	    // if store returns 1, it was a miss  
         // either call write allocate or no write allocate 
-        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address/*, lruOrFifo*/) == 1) {
+        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo) == 1) {
 	  if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-back") {
 	    tCycles += 25 * numBytes + 1;
 	  } else if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-through") {

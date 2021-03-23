@@ -66,7 +66,7 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
 
 }
 
-int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks/*, string lruOrFifo*/) {
+int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks, string lruOrFifo) {
   int startIndex = c.index *(blocks);
   for (int i = startIndex; i < startIndex + blocks; i++) {
     if(cache.at(i).index == -1) {
@@ -76,11 +76,11 @@ int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks/*, string lruOrF
       return 0;
     }
   }
-  //if (lruOrFifo == "fifo") {
+  if (lruOrFifo == "fifo") {
     //fifo
-  //} else {
+  } else {
     lru(cache, startIndex, startIndex + blocks, c);
-    //}
+   }
   return 1;
 }
 
@@ -90,7 +90,7 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
   int startIndex = c.index *(blocks);
 
   for (size_t i = startIndex; i < startIndex + blocks; i++) {
-    //c.timestamp += cache.at(i).timestamp; 
+    c.timestamp += cache.at(i).timestamp; 
     if(cache.at(i).tag == c.tag) {
       cache.at(i).accessCount++;
       return 0;
@@ -105,26 +105,26 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int blocks) {
 // return 1 if miss (tag can't be read / found)                                                                                          
 // read data 
 int loadAndStore(vector<Cache> &cache, int sets, int blocks, int bytes
-		 ,string writeAlloc, string writeTB, unsigned long address/*, string fifoOrLru*/) {
+		 ,string writeAlloc, string writeTB, unsigned long address, string fifoOrLru) {
 
   long tag, index = 0;
   getTagIndex(sets, blocks, bytes, address, index, tag);
 
-  Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index};
+  Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index, .timestamp = 1};
   
   
   if(writeAlloc == "write-allocate" && writeTB == "write-through") {
     if(checkAddressInCache(c, cache, blocks) == 0) {
       return 0;
     } 
-    addAddressToCache(c, cache, blocks/*, fifoOrLru*/);
+    addAddressToCache(c, cache, blocks, fifoOrLru);
 
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
     if(checkAddressInCache(c, cache, blocks) == 0) {
       cache.at(c.index *(blocks)).dirty = 1;
       return 0;
     } 
-    addAddressToCache(c, cache, blocks/*, fifoOrLru*/);
+    addAddressToCache(c, cache, blocks, fifoOrLru);
     cache.at(c.index *(blocks)).dirty = 1;
 
   } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
@@ -151,7 +151,7 @@ void lru(vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   cache.at(index).accessCount++;
 }
 
-/*
+
 //(first-in-first-out) we evict the block that has been in the cache the longest
 void fifo(vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   // evict block
@@ -169,4 +169,4 @@ void fifo(vector<Cache> &cache, int startIndex, int endIndex, Cache c) {
   cache.at(index) = c;
   cache.at(index).timestamp = 1;
 }
-*/
+
