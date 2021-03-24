@@ -79,10 +79,9 @@ int main (int argc, char *argv[]) {
 
     int sHits = 0, sMisses = 0;
     int lHits = 0, lMisses = 0;
-    int tLoads = 0, tStore = 0, tCycles = 0, time = 1;
+    int tLoads = 0, tStore = 0, tCycles = 0;
 
     while (std::cin.peek() != EOF) {
-      time = tCycles;
         string firstValue;
         std::cin >> firstValue;
         
@@ -103,7 +102,7 @@ int main (int argc, char *argv[]) {
             // if load returns 0, it was a hit                                    
             // if load returns 1, it was a miss 
             if(load(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc,
-             writeThroughOrBack, address, lruOrFifo, time) == 1) {
+             writeThroughOrBack, address, lruOrFifo, tCycles) == 1) {
                 lMisses++;
                 tCycles += 25 * numBytes + 1;
             } else {
@@ -117,7 +116,7 @@ int main (int argc, char *argv[]) {
             // if store returns 1, it was a miss  
             // either call write allocate or no write allocate 
             if(store(cache, numSets, numBlocks, numBytes,
-             writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo, time) == 1) {
+             writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo, tCycles) == 1) {
                 if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-back") {
                     tCycles += 25 * numBytes + 1;
                 } else if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-through") {
