@@ -79,65 +79,65 @@ int main (int argc, char *argv[]) {
 
     int sHits = 0, sMisses = 0;
     int lHits = 0, lMisses = 0;
-    int tLoads = 0, tStore = 0, tCycles = 0;
+    int tLoads = 0, tStore = 0, tCycles = 0, time = 1;
 
     while (std::cin.peek() != EOF) {
-      string firstValue;
-      std::cin >> firstValue;
+        string firstValue;
+        std::cin >> firstValue;
+        
+        // hex value
+        std::string secondValue;
+        std::cin >> secondValue;
+
+        // don't use 3rd value for anything 
+        string thirdValue;
+        std::cin >> thirdValue;
+
+        // this is just a print statement
+        address = hexToBinary(secondValue);
+
       
-      // hex value
-      std::string secondValue;
-      std::cin >> secondValue;
-
-      // don't use 3rd value for anything 
-      string thirdValue;
-      std::cin >> thirdValue;
-
-      // this is just a print statement
-      //std::cout << firstValue << " " << secondValue << " " << thirdValue <<std::endl;
-      address = hexToBinary(secondValue);
-
-      
-      if (firstValue == "l") {
-	    // load hex value (2nd value in set)                                   
-        // if load returns 0, it was a hit                                    
-        // if load returns 1, it was a miss 
-        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo) == 1) {
-            lMisses++;
-            tCycles += 25 * numBytes + 1;
-        } else {
-            lHits++;
-            tCycles++;
-        }
-        tLoads++;
-      } else if (firstValue == "s") {
-        // store hex value (2nd value in set)
-        // if store returns 0, it was a hit
-	    // if store returns 1, it was a miss  
-        // either call write allocate or no write allocate 
-        if(loadAndStore(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo) == 1) {
-	  if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-back") {
-	    tCycles += 25 * numBytes + 1;
-	  } else if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-through") {
-	    tCycles += 25 * numBytes + 101;
-	  } else {
-            tCycles += 100;
-	  }
-	   sMisses++;
-        } else {
-	  if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-back") {
-	    tCycles ++;
-	  } else {
-	    tCycles += 101;
-	  }
-            sHits++;
-        }
-        tStore++;
-      } 
-	
+        if (firstValue == "l") {
+            // load hex value (2nd value in set)                                   
+            // if load returns 0, it was a hit                                    
+            // if load returns 1, it was a miss 
+            if(load(cache, numSets, numBlocks, numBytes, writeAllocOrNoAlloc,
+             writeThroughOrBack, address, lruOrFifo, time) == 1) {
+                lMisses++;
+                tCycles += 25 * numBytes + 1;
+            } else {
+                lHits++;
+                tCycles++;
+            }
+            tLoads++;
+        } else if (firstValue == "s") {
+            // store hex value (2nd value in set)
+            // if store returns 0, it was a hit
+            // if store returns 1, it was a miss  
+            // either call write allocate or no write allocate 
+            if(store(cache, numSets, numBlocks, numBytes,
+             writeAllocOrNoAlloc, writeThroughOrBack, address, lruOrFifo, time) == 1) {
+                if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-back") {
+                    tCycles += 25 * numBytes + 1;
+                } else if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-through") {
+                    tCycles += 25 * numBytes + 101;
+                } else {
+                    tCycles += 100;
+                }
+                sMisses++;
+            } else {
+                if (writeAllocOrNoAlloc == "write-allocate" && writeThroughOrBack == "write-back") {
+                    tCycles ++;
+                } else {
+                    tCycles += 101;
+                }
+                sHits++;
+            }
+            tStore++;
+        } 
+        
     }
 
-    //std::cout << "cache length: " << cache.size() <<'\n';
     std::cout << "Total loads: " << tLoads << "\n";
     std::cout << "Total stores: " << tStore << "\n";
     std::cout << "Load hits: " << lHits << "\n";
