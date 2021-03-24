@@ -82,6 +82,7 @@ int main (int argc, char *argv[]) {
     int tLoads = 0, tStore = 0, tCycles = 0, time = 1;
 
     while (std::cin.peek() != EOF) {
+      time = tCycles;
         string firstValue;
         std::cin >> firstValue;
         

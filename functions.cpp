@@ -69,7 +69,7 @@ int addAddressToCache(Cache &c, vector<Cache>&cache, int &blocks, string &lruOrF
     if(cache.at(i).index == -1) {
       cache.at(i) = c;
       cache.at(i).accessCount++;
-      cache.at(i).timestamp = time++;
+      cache.at(i).timestamp = time;
    
       return 0;
     }
@@ -92,7 +92,7 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int &blocks) {
   //check set to see if address is in cache
   for (size_t i = startIndex; i < startIndex + blocks; i++) {
     //c.timestamp += cache.at(i).timestamp; 
-    if(cache.at(i).tag == c.tag) {
+    if(cache.at(i).tag == c.tag) {      
       cache.at(i).accessCount++;
       return 0;
     }
@@ -112,31 +112,11 @@ int load(vector<Cache> &cache, int &sets, int &blocks, int &bytes
   getTagIndex(sets, blocks, bytes, address, index, tag);
   Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index, .timestamp = 1};
   
-  if(writeAlloc == "write-allocate" && writeTB == "write-through") {
-    //checks if address is in cache
-    if(checkAddressInCache(c, cache, blocks) == 0) {
-      return 0;
-    } 
-
-    //its not so add the address to cache
-    addAddressToCache(c, cache, blocks, fifoOrLru, time);
-
-  } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
-    //check if address is in the cache
-    if(checkAddressInCache(c, cache, blocks) == 0) {
-      cache.at(c.index *(blocks)).dirty = 1;
-      return 0;
-    } 
-
-    //its not so add it and mark it as dirty
-    addAddressToCache(c, cache, blocks, fifoOrLru, time);
-    cache.at(c.index *(blocks)).dirty = 1;
-
-  } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
-    if(checkAddressInCache(c, cache, blocks) == 0) {
-      return 0;
-    } 
+  if(checkAddressInCache(c, cache, blocks) == 0) {
+    return 0;
   }
+
+  addAddressToCache(c, cache, blocks, fifoOrLru, time);
 
   return 1;
 }
@@ -146,7 +126,7 @@ int store(vector<Cache> &cache, int &sets, int &blocks, int &bytes
 
   long tag, index = 0;
   getTagIndex(sets, blocks, bytes, address, index, tag);
-  Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index, .timestamp = 1};
+  Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index, .timestamp = time};
   
   if(writeAlloc == "write-allocate" && writeTB == "write-through") {
     //checks if address is in cache
@@ -160,14 +140,16 @@ int store(vector<Cache> &cache, int &sets, int &blocks, int &bytes
   } else if(writeAlloc == "write-allocate" && writeTB == "write-back") {
     //check if address is in the cache
     if(checkAddressInCache(c, cache, blocks) == 0) {
-      cache.at(c.index *(blocks)).dirty = 1;
+      cache.at(c.index/* *(blocks)*/).dirty = 1;
       return 0;
     } 
 
     //its not add it and mark it as dirty
     addAddressToCache(c, cache, blocks, fifoOrLru, time);
-    cache.at(c.index *(blocks)).dirty = 1;
-
+    cache.at(c.index).dirty = 1;
+    cache.at(c.index).accessCount++;
+   
+    
   } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
     if(checkAddressInCache(c, cache, blocks) == 0) {
       return 0;
@@ -215,6 +197,6 @@ void fifo(vector<Cache> &cache, int startIndex, int endIndex, Cache &c, int &tim
 
   //replace that address with the new address
   cache.at(index) = c;
-  cache.at(index).timestamp = time++;
+  cache.at(index).timestamp = time;
 }
 
