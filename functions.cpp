@@ -33,9 +33,8 @@ unsigned long hexToBinary(std::string &s) {
 void getTagIndex(int sets, int blocks, int bytes, unsigned long address
                 ,long &index, long &tag) {
   int indexBits = log2(sets);
-  int offset = log2(blocks);
+  int offset = log2(bytes);
   int tagBits = 32 - indexBits - offset;
-  //std::cout << "indexBits: " << indexBits << " tagBits: " << tagBits << std::endl;
   //Get index and tag from address                                                                    
   int addressLength = log2(address) + 1;
   if (addressLength < 32 && addressLength > offset + indexBits) {
@@ -57,9 +56,6 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
     tag = 0;
     index = 0;
   }
-  //std::cout << "tagBits:" << tagBits << " indexBits:" << indexBits << std::endl;
-  //std::cout << "tag:" << tag << " index:" << index << std::endl;
-
 }
 
 int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks, int bytes,  string &lruOrFifo, int &tCycles) {
@@ -71,7 +67,6 @@ int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks, int bytes,  str
       cache.at(i).accessCount++;
       cache.at(i).timestamp = tCycles;
       if (c.dirty == 1) {
-	//std::cout << "dirt" << std::endl;
         cache.at(i).dirty = 1;
       }
       return 0;
@@ -80,10 +75,8 @@ int addAddressToCache(Cache &c, vector<Cache>&cache, int blocks, int bytes,  str
 
   //There is no empty spot so do an evict
   if (lruOrFifo == "fifo") {
-    //std::cout << "fifo" << std::endl;
     if (fifo(cache, startIndex, startIndex + blocks, c, tCycles) == 0) {
       // dirty block was evicted
-      // std::cout << "dirty block evicted" << std::endl;  
       tCycles += 25 * bytes;
     }
   } else {
@@ -102,12 +95,10 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int &blocks) {
 
   //check set to see if address is in cache
   for (size_t i = startIndex; i < startIndex + blocks; i++) {
-    //c.timestamp += cache.at(i).timestamp; 
     if(cache.at(i).tag == c.tag) {      
       cache.at(i).accessCount++;
       if (c.dirty == 1) {
-	//std::cout << "dirt" << std::endl;
-	cache.at(i).dirty = 1;
+      cache.at(i).dirty = 1;
       }
       return 0;
     }
@@ -125,7 +116,6 @@ int load(vector<Cache> &cache, int &sets, int &blocks, int &bytes
   long tag, index = 0;
   getTagIndex(sets, blocks, bytes, address, index, tag);
   Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index, .timestamp = tCycles};
-  //std::cout << "tag: " << tag << " index: " << index << std::endl; 
   if(checkAddressInCache(c, cache, blocks) == 0) {
     return 0;
   }
@@ -134,7 +124,9 @@ int load(vector<Cache> &cache, int &sets, int &blocks, int &bytes
   return 1;
 }
 
-// return 0 if hit (tag exists)                                                                   // return 1 if miss (tag can't be read / found)                                                   // read data  
+// return 0 if hit (tag exists)                                                                   
+// return 1 if miss (tag can't be read / found)                                                   
+// read data  
 int store(vector<Cache> &cache, int &sets, int &blocks, int &bytes
 	,string &writeAlloc, string &writeTB, unsigned long &address, string &fifoOrLru, int &tCycles) {
 
@@ -161,14 +153,10 @@ int store(vector<Cache> &cache, int &sets, int &blocks, int &bytes
     // address in cache but not "memory"
     addAddressToCache(c, cache, blocks, bytes, fifoOrLru, tCycles);
     
-   
-    
-  } else if(writeAlloc == "no-write-allocate" && writeTB == "write-through") {
+  } else {
     if(checkAddressInCache(c, cache, blocks) == 0) {
       return 0;
     }
-    
-
   }
 
   return 1;
@@ -186,18 +174,19 @@ int store(vector<Cache> &cache, int &sets, int &blocks, int &bytes
 // return 0 if dirty block                                                                      
 // return 1 else  
 int lru(vector<Cache> &cache, int startIndex, int endIndex, Cache &c) {
-  int index = startIndex + 1;
-  int count = cache.at(startIndex + 1).accessCount;
+  int index = startIndex;
+  int count = cache.at(startIndex).accessCount;
 
   //std::cout << "got to lru" << std::endl;
   //go through each slot in set and check
   //which one was accessed the least recent
-  for(int i = startIndex + 1; i <= endIndex; i++) {
+  for(int i = startIndex; i < endIndex; i++) {
     if(count > cache.at(i).accessCount) {
       index = i;
       count = cache.at(i).accessCount;
     }
   }
+
   if (cache.at(index).dirty == 1) {
     cache.at(index).dirty = 0;
     cache.at(index) = c;
@@ -216,13 +205,13 @@ int lru(vector<Cache> &cache, int startIndex, int endIndex, Cache &c) {
 // return 0 if dirty block
 // return 1 else 
 int fifo(vector<Cache> &cache, int startIndex, int endIndex, Cache &c, int &tCycles) {
-  int index = startIndex + 1;
-  int count = cache.at(startIndex + 1).timestamp;
+  int index = startIndex;
+  int count = cache.at(startIndex).timestamp;
 
   // std::cout << "got to fifo" << std::endl;
   //go through each slot in set and check
   //which one was added the longest (so smallest timestamp)
-  for(int i = startIndex + 1; i <= endIndex; i++) {
+  for(int i = startIndex; i < endIndex; i++) {
     if(count > cache.at(i).timestamp) {
       index = i;
       count = cache.at(i).timestamp;
@@ -233,8 +222,10 @@ int fifo(vector<Cache> &cache, int startIndex, int endIndex, Cache &c, int &tCyc
     cache.at(index).dirty = 0;
     cache.at(index) = c;
     cache.at(index).timestamp = tCycles;
+    /*increment cycle here since dirty bit*/
     return 0;
   }
+
   //replace that address with the new address
   cache.at(index) = c;
   cache.at(index).timestamp = tCycles;

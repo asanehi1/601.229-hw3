@@ -74,6 +74,7 @@ int main (int argc, char *argv[]) {
     c.accessCount = 0;
     c.index = -1;
     c.timestamp = 0;
+
  
     vector<Cache> cache(numSets * numBlocks * numBytes, c);
 
