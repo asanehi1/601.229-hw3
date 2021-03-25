@@ -35,7 +35,7 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
   int indexBits = log2(sets);
   int offset = log2(blocks);
   int tagBits = 32 - indexBits - offset;
-
+  //std::cout << "indexBits: " << indexBits << " tagBits: " << tagBits << std::endl;
   //Get index and tag from address                                                                    
   int addressLength = log2(address) + 1;
   if (addressLength < 32 && addressLength > offset + indexBits) {
@@ -45,7 +45,7 @@ void getTagIndex(int sets, int blocks, int bytes, unsigned long address
     index = index >> (offset);
   } else if (addressLength < 32 && addressLength > offset) {
     tag = 0;
-    index = index >> (offset);
+    index = address >> (offset);
   } else if (addressLength == 32) {
     //if addressLength = 32                                                                              
     tag = address >> (32 - tagBits);
@@ -122,11 +122,10 @@ int checkAddressInCache(Cache &c, vector<Cache>&cache, int &blocks) {
 // read data 
 int load(vector<Cache> &cache, int &sets, int &blocks, int &bytes
 	,string &writeAlloc, string &writeTB, unsigned long &address, string &fifoOrLru, int &tCycles) {
-
   long tag, index = 0;
   getTagIndex(sets, blocks, bytes, address, index, tag);
   Cache c = {.tag = tag,.dirty = 0,.accessCount = 1,.index = index, .timestamp = tCycles};
-  
+  //std::cout << "tag: " << tag << " index: " << index << std::endl; 
   if(checkAddressInCache(c, cache, blocks) == 0) {
     return 0;
   }
